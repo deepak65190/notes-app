@@ -23,6 +23,21 @@ noteRoutes.get("/", (req, res) => {
   res.send({totalNotes,currentPage,notes});
 });
 
+
+//get note based on id
+noteRoutes.get("/:id",(req,res)=>{
+    const noteId=req.params.id ;
+    const files=fs.readdirSync(notesDirectory) ;
+    const data = files.map(file => {
+     return JSON.parse(fs.readFileSync(path.join(notesDirectory, file), 'utf-8'));
+        
+    });
+    const singleNote=data.find((ele)=>ele.id===noteId)
+    res.send(singleNote)
+
+})
+
+
 // Note validation schema
 const noteSchema = joi.object({
     title: joi.string().required(), 
