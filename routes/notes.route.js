@@ -6,15 +6,21 @@ const joi = require('joi');
 const noteRoutes = express.Router();
 
 const notesDirectory = path.join(__dirname, "../notes");
+
 //list of all notes
 noteRoutes.get("/", (req, res) => {
+    console.log(req.body.query)
+    const {page=1 ,limit=10}=req.query
+    console.log("page",page)
     const files=fs.readdirSync(notesDirectory) ;
-    const notes = files.map(file => {
-     return fs.readFileSync(path.join(notesDirectory, file), 'utf-8');
+    const data = files.map(file => {
+     return JSON.parse(fs.readFileSync(path.join(notesDirectory, file), 'utf-8'));
         
     });
-
-  res.send(notes);
+    const notes = data.slice((page - 1) * limit, page * limit);
+    const totalNotes=data.length ;
+    const currentPage=parseInt(page)
+  res.send({totalNotes,currentPage,notes});
 });
 
 // Note validation schema
